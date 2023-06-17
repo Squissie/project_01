@@ -1,0 +1,11 @@
+.random {
+    display: none;
+    z-index: 10001;
+    position: fixed;
+    background: white;
+    top: 50%;
+    left: 50%;
+    padding: 10px;
+    width: 400px;
+    max-width: 90%;
+}

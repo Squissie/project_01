@@ -1,0 +1,21 @@
+{% extends 'temp_form.html' %}
+{% load bootstrap4 %}
+{% block title %}
+Upload New Image
+{% endblock %}
+{% block formtype %}
+enctype="multipart/form-data"
+{% endblock %}
+{% block above %}
+<div class="col-12">
+{% endblock %}
+{% block form %}
+  {% bootstrap_form form layout='inline'%}
+  <button type="submit" class="btn btn-info customBtn w-100">Add Image</button>
+
+{% endblock %}
+{% block below %}
+<br>
+<a href=" {% url 'patientProfile' patient.id %} " class="btn btn-outline-info" role="button">Back</a>
+</div>
+{% endblock %}

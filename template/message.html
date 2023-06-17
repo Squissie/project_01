@@ -1,0 +1,14 @@
+{% if messages %}
+  <div id="msg" style="position: absolute; width: 100%;">
+    {% for message in messages %}
+      <div class="alert h6 {{ message.tags }} m-3 fade show" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(function() {
+      document.querySelector("#msg").remove();
+    }, 5100);
+  </script>
+{% endif %}

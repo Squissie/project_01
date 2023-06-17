@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+
+  {% include 'message.html' %}
+
+  <section class="vh-100 bg-info">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-8 col-xl-6">
+          <div class="card rounded-3">
+            <img src="{% static 'logo_b.jpg' %}"
+                class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;"
+                alt="Sample photo">
+            <div class="card-body p-4 p-md-5">
+
+              <div class="row justify-content-center mt-5">
+                <h2 class="text-center mb-4">OTP Verification</h2>
+                <p class="text-center">Enter the OTP sent to your email address:</p>
+                <form method="post">
+                  {% csrf_token %}
+                  <table border="0">
+                    <tr>
+                      <td> 
+                        <input type="text" class="form-control" id="otp" name="otp" required placeholder="Enter The OTP">
+                      </td>
+                      <td>
+                        <button class="btn btn-dark btn-lg btn-block bg-info" type="submit">Submit</button>
+
+                      </td>
+                    </tr>
+                  </table>
+                  <div class="form-group">
+                    <a href="?resend_otp=true" class="btn btn-link">Didn't get your OTP? Resend OTP</a>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

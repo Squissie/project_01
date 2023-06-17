@@ -1,0 +1,10 @@
+{% extends 'temp_form.html' %}
+{% block title %}
+New Consultation
+{% endblock %}
+{% block form %}
+<div class="col-12">
+    {{ form_consultation.as_p }}
+    <button type="submit" name="create_consult" class="btn btn-primary btn-block customBtn">Create</button>
+</div>
+{% endblock %}

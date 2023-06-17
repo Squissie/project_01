@@ -1,0 +1,19 @@
+{% extends 'temp_form.html' %}
+{% load bootstrap4 %}
+{% block title %}
+Edit Consultation
+{% endblock %}
+{% block above %}
+<div class="col-12">
+{% endblock %}
+{% block form %}
+
+  {% bootstrap_form form %}
+  <button type="submit" class="btn btn-primary btn-block customBtn w-100">Confirm</button>
+
+{% endblock %}
+{% block below %}
+<br>
+<a href=" {% url 'patientProfile' patient.id %} " class="btn btn-outline-info" role="button">Back</a>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'temp_form.html' %}
+{% load bootstrap4 %}
+{% block title %}
+Upload Patient Records
+{% endblock %}
+{% block above %}
+{{ form.media }}
+<div class="col-12">
+{% endblock %}
+{% block form %}
+  {% bootstrap_form form %}
+  <button type="submit" class="btn btn-info btn-block customBtn w-100">Add Patient</button>
+{% endblock %}
+{% block below %}
+<br>
+<a href=" {% url 'home' %} " class="btn btn-outline-info" role="button">Home</a>
+</div>
+<script>
+  function monthChanged() {
+    var month = $('#id_dateofbirth_month').val() - 1;
+    var year = $('#id_dateofbirth_year').val();
+    if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+      var days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    }
+    else {
+      var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    }
+    console.log($('#id_dateofbirth_day option').length)
+    console.log(days[month])
+    var diff = $('#id_dateofbirth_day option').length - (days[month]);
+    if (diff > 0) { // Remove
+      $('#id_dateofbirth_day option').slice(days[month]).remove();
+    } else if (diff < 0) { // Add
+      for (let i = $('#id_dateofbirth_day option').length + 1; i <= days[month]; i++) {
+        $('<option>').attr('value', i).text(i).appendTo('#id_dateofbirth_day');
+      }
+    }
+  }
+
+  $(function () {
+    monthChanged(); // On document ready
+    $('#id_dateofbirth_month').change(monthChanged);
+    $('#id_dateofbirth_year').change(monthChanged);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+# Run server: 
+python manage.py runserver
+
+# Clear database:
+python manage.py flush
+
+# Apply changes to models:
+python manage.py makemigrations
+python manage.py migrate

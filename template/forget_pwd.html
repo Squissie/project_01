@@ -1,0 +1,10 @@
+{% extends 'baseLogin.html' %}
+
+{% block content %}
+  <form method="POST" action="{% url 'forget_password' %}">
+    {% csrf_token %}
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

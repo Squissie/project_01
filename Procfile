@@ -1,0 +1,1 @@
+web: gunicorn COVIDVisionX.wsgi --log-file -

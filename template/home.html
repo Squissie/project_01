@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<body>
+<div class="container" style="max-width: 80%;">
+
+  {% if user.role == 'doctor' %}
+  <h2 class="text-center mb-4">Diagnosis Queue</h3>
+  {% elif user.role == 'nurse' %}
+  <h2 class="text-center mb-4">Image Upload Queue</h3>
+  {% else %}
+  <h2 class="text-center mb-4">All Users Queue</h3>
+  {% endif %}
+  <br>
+  <table class="table table-hover table-bordered">
+    <thead class="alert-info">
+      <tr>
+        <th >Name</th>
+        <th >ID</th>
+        <th >Latest Consultation</th>
+        {% if user.role == 'nurse' %}
+        <th >Xray Image</th>
+        {% endif %}
+      </tr>
+    </thead>
+  {% if patients %}
+    <tbody>
+      {% for patient in patients %}
+      <tr>
+        <td>
+          <a href = "{% url 'patientProfile' patient.id %}" style="color:inherit;font-weight: bold;">{{ patient.firstName }} {{ patient.lastName }}</a>
+        </td>
+        <td>{{ patient.pk }}</td>
+        <td>
+          {% if patient.latest_consultation %}
+          {{ patient.latest_consultation.datetime }}
+          {% else %}
+          -
+          {% endif %}
+        </td>
+        {% if user.role == 'nurse' %}
+        <td>
+          {% if patient.latest_consultation %}
+          <a href="{% url 'addImage' patient.latest_consultation.id %}" class="btn btn-danger"> Upload Image</button>
+          {% endif %}
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  </table>
+  <h6 class="text-center">Nothing in the queue</h6>
+  {% endif %}
+</div>
+{% endblock %}
+</body>

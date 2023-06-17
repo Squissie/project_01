@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+<h2 class="text-center mb-4">Patient Records</h2>
+  <div class="container" style="max-width: 80%;">
+    <div class='card card-body'>
+    	<form method='get'>
+    		<span class="align-middle">
+          <label for="firstName" class="text-center">First Name: </label>
+        </span>
+    		<span class="align-middle">
+          <input type="text" name="firstName">
+        </span>
+        <span class="align-middle">
+          <button type='submit' class="btn btn-info">Search</button>
+        </span>
+    	</form>
+    </div>
+
+    <table class="table table-hover table-bordered">
+  <thead class="alert-info">
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">ID</th>
+    </tr>
+  </thead>
+  <tbody>
+  	{% for patient in patients %}
+    <tr>
+      <th scope="row">
+      	<a href=" {% url 'patientProfile' patient.id %} " style="color:inherit;">{{ patient.firstName }} {{ patient.lastName }}</a>
+      </th>
+      <td>{{ patient.pk }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if patients.has_other_pages %}
+  <ul class="pagination">
+    {% if patients.has_previous %}
+      <li><a href="?page={{ patients.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in patients.paginator.page_range %}
+      {% if patients.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if patients.has_next %}
+      <li><a href="?page={{ patients.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
+{% endblock %}
+</div>
+</body>

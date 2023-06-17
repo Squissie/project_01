@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      {% if success_message %}
+        <div class="alert alert-success" role="alert">
+          {{ success_message }}
+        </div>
+      {% endif %}
+      
+      <h1 class="text-center mb-4">Create Account</h1>
+      <form method="post" action="{% url 'createUser' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="user-type">User Type:</label>
+          <select class="form-control" id="user-type" name="user-type">
+            <option value="doctor">Doctor</option>
+            <option value="nurse">Nurse</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username">
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="text" class="form-control" id="email" name="email" pattern = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" title = "Please enter a valid email address!" placeholder="Enter Email">
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Password:</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password:</label>
+          <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm password">
+        </div>
+        <button type="submit" class="btn btn-dark btn-lg btn-block bg-info">Create Account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector('form');
+  const usernameInput = form.querySelector('#username');
+  const passwordInput = form.querySelector('#password');
+  const confirmPasswordInput = form.querySelector('#confirm-password');
+
+  form.addEventListener('submit', (event) => {
+    if (!usernameInput.value || !passwordInput.value || !confirmPasswordInput.value) {
+      alert('All fields are required!');
+      event.preventDefault();
+      return;
+    }
+    
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; 
+    if (!passwordRegex.test(passwordInput.value)) {
+      alert('Password must contain: \n * At least 8 characters \n * at least one uppercase letter \n * At least one lowercase letter \n * At least one number and one special character');
+      event.preventDefault();
+      return;
+    }
+    
+    if (passwordInput.value !== confirmPasswordInput.value) {
+      alert('Passwords do not match!');
+      event.preventDefault();
+      return;
+    }
+  });
+</script>
+
+{% endblock %}

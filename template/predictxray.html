@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-center mb-4">X-Ray Image Processing</h1>
+<form>
+  <label for="username">Patient ID:</label>
+  <input type="text" class="form-control" id="patientID" name="patientID" placeholder="Enter patient ID">
+</form>
+<form method="post" enctype="multipart/form-data" action="predictxray">
+
+  {% csrf_token %}
+  <div>
+    <label for="fname"><b>Upload Image File Here:</b></label>
+  </div> <input name="filePath" type="file"><br><br>
+  <br>
+
+
+  <button type="submit" class="btn btn-primary btn-block customBtn">Submit Image</button>
+
+</form>
+
+<br>
+
+{% if filePath %}
+<h3 class="text-center">X-Ray image and Class Activation Map image</h3>
+<div class='imgContainer'>
+  <img class='xray-image' src="{{ filePath }}">
+  <img class='xray-image' src="./static/media/CAM.png">
+</div>
+{% endif %}
+
+{% if prediction %}
+<h3 class="text-center">Prediction results</h3>
+<p><b>{{prediction}}</b></p>
+
+<h3 class="text-center">Doctor Diagnosis</h3>
+
+<div class='diagnosisContainer'>
+
+  <ul class="list-group diagnosisItem">
+    <li class="list-group-item"><b>Name:</b> John Doe</li>
+    <li class="list-group-item"><b>patientID:</b> 123</li>
+    <li class="list-group-item"><b>Gender:</b> M</li>
+    <li class="list-group-item"><b>Age:</b> 31</li>
+  </ul>
+
+
+  <form method="post" action="home" class='diagnosisItem'>
+    <div class="form-group">
+      {% csrf_token %}
+      <label><b>Symptoms:</b></label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label><b>Diagnosis</b></label>
+      <input type="text" class="form-control" id="formGroupExampleInput">
+    </div>
+    <div class="form-group">
+      <label><b>Medication and treatment:</b></label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block customBtn">Upload Diagnosis</button>
+  </form>
+  {% endif %}
+
+  {% endblock %}

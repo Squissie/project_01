@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+<div class="container" style="width: 80%">
+  <h2 class="text-center mb-4">{% block title %}{% endblock %}</h2>
+  {% block above %}
+  {% endblock %}
+  <form method="post" {% block formtype %}{% endblock %}>
+    {% csrf_token %}
+    {% block form %}
+    {% endblock %}
+  </form>
+  {% block below %}
+  {% endblock %}
+</div>
+</body>
+{% endblock %}

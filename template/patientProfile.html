@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+  .carousel-control-prev, .carousel-control-next {
+    padding: 0;
+    background: none;
+    border: none;
+  }
+  .modal-body {
+    padding: 0;
+  }
+  .modal-backdrop.show {
+    opacity: 1;
+  }
+  .bigmodal {
+    width: 100%;
+  }
+  .carousel-caption {
+    /* color: var(--info); */
+    position: relative;
+    left: 0;
+    top: 0;
+    margin-top: 2%;
+  }
+  .carousel {
+      background-color: var(--info);
+      padding-left: 5%;
+      padding-right: 5%;
+      padding-top: 2%;
+      padding-bottom: 2%;
+  }
+  .carouselXraysBody {
+      background-color: black;
+  }
+
+  .carousel-control-prev {
+      margin-left: -6%;
+      width: 7%;
+  }
+  .carousel-control-next {
+      margin-right: -6%;
+      width: 7%;
+  }
+  .abspos {
+    position: absolute;
+  }
+  .thumb-img {
+    width: 10em;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 80%;">
+  <h2 class="text-left mb-4">Patient Profile</h3>
+
+  <ul class="list-group">
+    <li class="list-group-item"><b>Name:</b> {{ patient.firstName }} {{ patient.lastName }}</li>
+    <li class="list-group-item"><b>Gender:</b> {{ patient.get_gender_display }}</li>
+    <li class="list-group-item"><b>Date of Birth:</b> {{ patient.dateofbirth }}</li>
+    <li class="list-group-item"><b>Age:</b> {{ patient_age }}</li>
+  </ul>
+    
+  <br><br>
+  <div>
+    <h5 class="text-left">{% if assigned_user %}Assigned to: {{assigned_user}}{% else %}Not assigned{% endif %}</p>
+    {% if user.role == 'nurse' %}
+    <form method="post">
+      {% csrf_token %}
+      <span class="align-middle" style="margin-right: 2%;">
+        <select name="assigned_user">
+          {% for i in assign_form.assigned_user.field.queryset %}
+          <option value="{{i.pk}}" {% if i.pk == assigned_user.pk %}selected="selected"{% endif %}>{{i.username}}</option>
+          {% endfor %}
+        </select>
+      </span>
+      <span class="align-middle">
+        <button type="submit" class="btn btn-info">Assign</button>
+      </span>
+    </form>
+    {% endif %}
+  </div>
+  <br>
+  <table style="width: 100%;">
+    <tr>
+      <td> <h3 class="text-left">Patient History</h3> </td>
+      {% if user.role == 'nurse' %}
+      <td>
+        <a href="{% url 'patientProfileAdd' patient.id %}" class="btn btn-info" style="float: right;" role="button">New Consultation</a>
+      </td>
+      {% elif user.role == 'doctor' and patient.images %}
+      <td style="float: right;">
+        <button id="xrayBtns_x" class="btn btn-info" style="float: right;">View all images</button>
+      </td>
+      {% endif %}
+    </tr>
+  </table>
+  {% if not consultations %}
+  No consultation history
+  {% else %}
+  <div class="accordion" id="accordionExample">
+    {% for consultation in consultations %}
+    <div class="card">
+      <div class="card-header alert-info" id="heading {{forloop.counter}} " type="button" data-toggle="collapse" data-target="#collapse{{forloop.counter}}" aria-expanded="false" aria-controls="collapse{{forloop.counter}}">
+        <h5 class="mb-0">
+          Consultation - {{consultation.datetime}}
+        </h5>
+      </div>
+
+      <div id="collapse{{forloop.counter}}" class="collapse" aria-labelledby="heading{{forloop.counter}}" data-parent="#accordionExample">
+        <div class="card-body">
+          <ul>
+            <li><b>Date and time:</b> {{consultation.datetime}} </li>
+            <li><b>Symptoms:</b> {{consultation.symptoms}}</li>
+            <li><b>Diagnosis:</b> {{consultation.diagnosis}}</li>
+            <li><b>Medication:</b> {{consultation.medication}}</li>
+            <li><b>Treatment:</b> {{consultation.treatment}}</li>
+          </ul>
+          <ul class="list-group list-group-horizontal">
+            {% if user.role == 'doctor' %}
+            <li class="list-group-item">
+              <a href="{% url 'editConsultation' consultation.id %}" class="btn btn-info" role="button">Edit consultation</a>
+            </li>
+            {% elif user.role == 'nurse' %}
+            <li class="list-group-item">
+              <a href="{% url 'addImage' consultation.id %}" class="btn btn-info" role="button">Add image</a>
+            </li>
+            {% endif %}
+          </ul>
+          <ul id="xrayBtns_{{forloop.counter}}" class="list-group list-group-horizontal list-group-flush">
+            {% for img in consultation.images %}
+            <li class="list-group-item">
+              <img type="button" class="rounded btn btn-outline-info thumb-img" data-bs-toggle="modal" data-bs-target="#xrayModal_{{forloop.parentloop.counter}}" src="{{img.image.url}}">
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% for consultation in consultations %}
+  <div class="modal fade" id="xrayModal_{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="xrayModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl bigmodal modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <div id="carouselXrays_{{forloop.counter}}" class="carousel slide" data-ride="carousel" data-interval="false" data-wrap="false">
+            <ol class="carousel-indicators">
+              {% for img in consultation.images %}
+              <li data-target="#carouselXrays_{{forloop.parentloop.counter}}" data-slide-to="{{forloop.counter0}}" {% if forloop.first %}class="active"{% endif %}></li>
+              {% endfor %}
+            </ol>
+            <div class="carousel-inner">
+              {% for img in consultation.images %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <!-- <canvas id="xrayCanvas" class="abspos h-100 w-100"></canvas> -->
+                <div class="carousel-image container">
+                  <div class="row">
+                    {% if img.cam %}
+                      <img class="col-md-6" src="{{ img.image.url }}" alt="No X-ray Image">
+                      <img class="col-md-6" src="{{ img.cam.url }}" alt="No Class-Activation Map">
+                    {% else %}
+                      <div class="col-md-3"></div>
+                      <img class="col-md-6" src="{{ img.image.url }}" alt="No X-ray Image">
+                      <div class="col-md-3"></div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="carousel-caption d-none d-md-block bg-dark">
+                  <h5>{{ img.title }}</h5>
+                  <span style="white-space: pre-line;">{{ img.result }}</span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-target="#carouselXrays_{{forloop.counter}}" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-target="#carouselXrays_{{forloop.counter}}" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="modal fade" id="xrayModal_x" tabindex="-1" role="dialog" aria-labelledby="xrayModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl bigmodal modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <div id="carouselXrays_x" class="carousel slide" data-ride="carousel" data-interval="false" data-wrap="false">
+            <ol class="carousel-indicators">
+              {% for img in patient.images %}
+              <li data-target="#carouselXrays_x" data-slide-to="{{forloop.counter0}}" {% if forloop.first %}class="active"{% endif %}></li>
+              {% endfor %}
+            </ol>
+            <div class="carousel-inner">
+              {% for img in patient.images %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <!-- <canvas id="xrayCanvas" class="abspos h-100 w-100"></canvas> -->
+                <div class="carousel-image container">
+                  <div class="row">
+                    {% if img.cam %}
+                      <img class="col-md-6" src="{{ img.image.url }}" alt="No X-ray Image">
+                      <img class="col-md-6" src="{{ img.cam.url }}" alt="No Class-Activation Map">
+                    {% else %}
+                      <div class="col-md-3"></div>
+                      <img class="col-md-6" src="{{ img.image.url }}" alt="No X-ray Image">
+                      <div class="col-md-3"></div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="carousel-caption d-none d-md-block bg-dark">
+                  <h5>{{ img.title }}</h5>
+                  <h6>Consultation of {{ img.consultation.datetime }}</h6>
+                  <span style="white-space: pre-line;">{{ img.result }}</span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-target="#carouselXrays_x" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-target="#carouselXrays_x" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+   
+<script type="text/javascript">
+  {% for consultation in consultations %}
+    var openModalBtns{{forloop.counter}} = document.getElementById('xrayBtns_{{forloop.counter}}');
+    openModalBtns{{forloop.counter}}.addEventListener('click', openModal_{{forloop.counter}});
+    function openModal_{{forloop.counter}}(){
+      $('#xrayModal_{{forloop.counter}}').modal('show');
+    }
+  {% endfor %}
+  var openModalBtnsx = document.getElementById('xrayBtns_x');
+  openModalBtnsx.addEventListener('click', openModal_x);
+  function openModal_x(){
+    $('#xrayModal_x').modal('show');
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+test.py
+temp.txt
+test.html
+
+#python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+#django
+*.log
+local_settings.py
+# db.sqlite3
+# db.sqlite3-journal
+
+#project
+
+.env
